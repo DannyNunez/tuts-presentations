@@ -17,3 +17,11 @@ This is the basic unit for indexing. For simplicity let's imagine a single word,
 
 This is the in-memory structure where Lucene(and solr) perform the searches. We can think about a docuemnt to be a single record in the index. From an abstrct logical point of view, we can easily imagine a data structure as shown in the following figure. 
 
+
+
+Important Solr Resources
+=============================
+
+- [MMMapDirectory](http://blog.thetaphi.de/2012/07/use-lucenes-mmapdirectory-on-64bit.html)
+
+- [Segment Merging](http://blog.mikemccandless.com/2011/02/visualizing-lucenes-segment-merges.html)
