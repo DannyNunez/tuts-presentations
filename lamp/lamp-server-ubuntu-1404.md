@@ -101,6 +101,7 @@ Edit /etc/apache2/apache2.conf add "ServerName localhost" to the end of the file
 Secure the Mysql Server
 =======================
 ```
+sudo apt-get install  mysql-server 
 sudo mysql_install_db
 sudo mysql_secure_installation
 ```
