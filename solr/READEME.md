@@ -2,7 +2,7 @@ Understanding Solr
 ===========================
 
 - Apache solr was started at CNET in 2004 
-- It was initailly conceived to be a web application for providing a wide range of full-text search capabilities. 
+- It was initially conceived to be a web application for providing a wide range of full-text search capabilities. 
   by using and extending the power of the well known Apache Lucene Library. 
 - The two projects have been merged into a single development effort since 2010, with improved modularity.
 - solr is designed to be a standalone web server.
@@ -22,7 +22,7 @@ Understanding Solr
 - auto suggestion
 - advanced filtering
 - geocoded search
-- higlighting in text
+- highlighting in text
 - faceted search 
 
 Aspects of Solr
@@ -33,9 +33,9 @@ Aspects of Solr
 - Language Analysis
 	- solr permits us to configure different types of lanugae analysis even on a per-field basis, with the posiibility to configure them specficall for a certain language. 
 	- Intergrations with tools such as Apache UIMA for metadat extraction already exist. 
-- Faceted Search: This is a paticular type if search based on classification. With Solr, we can perform facated search automatically over our fields to gain information such as how many documents have the value London for the city field. This is useful to contruct some kind of navigation. This is another very familiar pattern in user experiance that you probably know from having used it on a e-commerce site such as amazon. 
-- It is easy to index data using useinf POST over HTTP
-- Solr can index text and metadata over a collection of rich docuemnts (Such as PDF, WORD or HTML) useing the [APACHE TIKA COMPONENT](http://tika.apache.org/).
+- Faceted Search: This is a particular type if search based on classification. With Solr, we can perform facated search automatically over our fields to gain information such as how many documents have the value London for the city field. This is useful to contruct some kind of navigation. This is another very familiar pattern in user experience that you probably know from having used it on a e-commerce site such as amazon. 
+- It is easy to index data using use POST over HTTP
+- Solr can index text and metadata over a collection of rich documents (Such as PDF, WORD or HTML) useing the [APACHE TIKA COMPONENT](http://tika.apache.org/).
 - Solr can read data from a database or other external data sources, and configure an internal workflow to directly index them if needed using the [DataImportHandler](http://wiki.apache.org/solr/DataImportHandler)
 - solr also exposes its own search services that are REST-Like on standard opne formats such as JSON or XML. 
 	- The services are designed to be paginated, and to expose parameters for sorting and filtering results.
