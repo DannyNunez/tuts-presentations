@@ -1,30 +1,40 @@
 ---
--  hosts: all
 
-   var_files:
-   -  vars.yml
+# Drupal LAMP Playbook (simple example) for Ubuntu 12.04
+#
+# This extremely simple Ansible playbook sets up a minimalistic Drupal
+# environment for local testing. It is built for Ubuntu 12.04, and is structured
+# in the most simple way possible. It uses most Ansible best practices, but as
+# far as organization goes, this playbook doesn't use roles, groups, etc., and
+# is intended as an example only.
+#
+# @author Jeff Geerling, 2014
 
-   pre_tasks:
-   - name: Update apt cache if needed
-     apt: update_cache=yes cache_valid_time=3600
+- hosts: all
 
+  vars_files:
+  - vars.yml
+
+  pre_tasks:
+  - name: Update apt cache if needed.
+    apt: update_cache=yes cache_valid_time=3600
 
   handlers:
   - name: restart apache
     service: name=apache2 state=restarted
 
   tasks:
-  - name: Get software for apt respository managerment
-    apt: name={{ item }} state=installed
+  - name: Get software for apt repository management.
+    apt: "name={{ item }} state=installed"
     with_items:
       - python-apt
       - python-pycurl
 
-  - name: Add ondrej repository for later versions of PHP
+  - name: Add ondrej repository for later versions of PHP.
     apt_repository: repo='ppa:ondrej/php5' update_cache=yes
 
-  - name: "Install Apache, MySql, PHP, and other dependencies."
-    apt: name={{ item }} state=installed
+  - name: "Install Apache, MySQL, PHP, and other dependencies."
+    apt: "name={{ item }} state=installed"
     with_items:
       - git
       - curl
@@ -43,17 +53,20 @@
       - python-mysqldb
       - mysql-server
 
-  - name: "Start Apache, MySQL, and PHP"
+  - name: Disable the firewall (since this is for local dev only).
+    service: name=ufw state=stopped
+
+  - name: "Start Apache, MySQL, and PHP."
     service: "name={{ item }} state=started enabled=yes"
     with_items:
       - apache2
       - mysql
 
-  - name: Enable Apache rewrite module (required for drupal)
+  - name: Enable Apache rewrite module (required for Drupal).
     apache2_module: name=rewrite state=present
     notify: restart apache
 
-  - name: Add Apache virtualhost for Druapl 8 development.
+  - name: Add Apache virtualhost for Drupal 8 development.
     template:
       src: "templates/drupal.dev.conf.j2"
       dest: "/etc/apache2/sites-available/{{ domain }}.dev.conf"
@@ -62,31 +75,32 @@
       mode: 0644
     notify: restart apache
 
-  - name: Symlink Drupal virtualhost to sites-enabled
+  - name: Symlink Drupal virtualhost to sites-enabled.
     file:
       src: "/etc/apache2/sites-available/{{ domain }}.dev.conf"
       dest: "/etc/apache2/sites-enabled/{{ domain }}.dev.conf"
       state: link
     notify: restart apache
 
-  - name: Remove default virtualhost file
+  - name: Remove default virtualhost file.
     file:
       path: "/etc/apache2/sites-enabled/000-default"
       state: absent
     notify: restart apache
 
   - name: Enable upload progress via APC.
-      lineinfile:
-        dest: "/etc/php5/apache2/conf.d/20-apcu.ini"
-        regexp: "^apc\.rfc1867"
-        line: "apc.rfc1867 = 1"
-        state: present
-  notify: restart apache
+    lineinfile:
+      dest: "/etc/php5/apache2/conf.d/20-apcu.ini"
+      regexp: "^apc.rfc1867"
+      line: "apc.rfc1867 = 1"
+      state: present
+    notify: restart apache
 
   - name: Remove the MySQL test database.
-      mysql_db: db=test state=absent
-    - name: Create a database for Drupal.
-      mysql_db: "db={{ domain }} state=present"
+    mysql_db: db=test state=absent
+
+  - name: Create a database for Drupal.
+    mysql_db: "db={{ domain }} state=present"
 
   - name: Install Composer into the current directory.
     shell: >
@@ -109,7 +123,7 @@
       chdir=/opt/drush
       creates=/opt/drush/vendor/autoload.php
 
-  - name: Create drush bin symlink.
+  - name: "Drush: Create drush bin symlink."
     file:
       src: /opt/drush/drush
       dest: /usr/local/bin/drush
@@ -129,18 +143,15 @@
       creates={{ drupal_core_path }}/sites/default/settings.php
     notify: restart apache
 
-  #SEE: https://drupal.org/node/2121849#comment-8413637
+  # SEE: https://drupal.org/node/2121849#comment-8413637
   - name: Set permissions properly on settings.php.
     file:
       path: "{{ drupal_core_path }}/sites/default/settings.php"
       mode: 0744
 
-  - name: Set permissions on files directory.
+  - name: Set permissions properly on files directory.
     file:
       path: "{{ drupal_core_path }}/sites/default/files"
       mode: 0777
       state: directory
       recurse: yes
-
-
-  
