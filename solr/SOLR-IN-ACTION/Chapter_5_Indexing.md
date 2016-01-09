@@ -62,6 +62,6 @@ SOLR uses the field definitions from the schema.xml file to figure out what kind
 Each field has a unique name that's used when constructing queries. 
 
 ```
-\<field name="screen_name" type="string" indexed="true" stored="true"/>
+<field name="screen_name" type="string" indexed="true" stored="true"/>
 ```
 
