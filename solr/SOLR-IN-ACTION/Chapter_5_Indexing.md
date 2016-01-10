@@ -147,3 +147,111 @@ The Destination field must be multivalued if any source fields are multivalued.
 </schema>
 ```
 
+You must define the Source and destination fields first, than connect them with the copyField directive after all fields have been defined. 
+
+#####Appling Different Analyzers to a field
+
+**Stemming**
+
+Stemming is a technique that transforms terms into a common base form. 
+With stemming, the terms fishing, fished and fished can all be reduced to a common stem of fish. 
+
+**Using copyField to apply different text analysis to the same text** 
+
+```
+<schema>
+    <fields>
+    <field name="text" type="stemmed_text" indexed="true" stored="false"/>
+    <field name="auto_suggest" type="unstemmed_text" indexed="true" stored="false" multiValued="true"/>
+    </fields>
+    <copyField source="text" dest="auto_suggest" />
+    <types>
+    </types>
+</schema>
+```
+
+**Unique key field**
+
+If you plan to distribute your SOLR index across multiple servers, you must provide a unique identifier. 
+
+Solr uses the \<uniqueKey> element to identify the unique identifier. 
+
+```
+<uniqueKey>id</uniqueKey>
+``` 
+
+Solr will sometimes return results incorrectly if you don't use the string type for text-based keys. Save your self some trouble and use string or one of the other primitive types for your unique field. 
+
+####Defining Field Types
+
+
+**String Fields**
+
+- Identify the language code 
+
+**How the String Field is Defined**
+
+```
+<fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true">
+```
+
+Behind the scenes, all field types are implemented by a Java class:
+
+**Date Fields**
+
+Solr provides an optimized built in \<fieldType> called tdate. 
+
+```
+<fieldType name="tdate" class="solr.trieDateField" omitNorms="true" precisionStep="6" positionIncrementGap="0"/>
+```
+Solr expects your dates to bin in the ISO-8601 Date/Time format
+(yyyy-MM-ddTHH:mm:ssZ). 
+
+Solr will return a validation error is the date is not in this format. 
+
+2012-05-22T09:30:22Z
+
+| Format  | Example  |
+|---------|----------|
+| yyyy               | 2012         |
+| MM                 | 05           |
+| dd                 | 22           |
+| HH (24 Hour clock) | 09           |
+| MM                 | 30           | 
+| ss = 22            | 22           |
+| Z                  | UTC Timezone |
+
+**Date Granularity**
+
+If your users only expect to query for documents by day, then you don’t need to index a date with second or millisecond precision. If you need to sort documents by date, then hour-level granularity may be too coarse, in which case you may want to do minute-level granularity.
+
+Solr supports date math operations to help you achieve the correct precision for a date field with little effort. 
+
+The tdate field is a good choice for fields on which you need to do date range queries, but it comes at a cost of requiring more space in your index because more tokens are stored per date value. 
+
+**Numeric Fields**
+
+```
+<field name="favorites_count" type="int" indexed="true" stored="true" />
+
+<fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+```
+
+You shouldn’t index a numeric field that you need to sort as a string field because Solr will do a lexical sort instead of a numeric sort if the underlying type is string-based. In other words, if you index numeric fields using a string-based field type, sorting will return results like 1, 10, 2, 3, ... instead of 1, 2, 3, ... 10.
+
+
+**Advanced Field Type Attributes**
+
+Solr support optional attributes for field types to enable advanced behavior. 
+
+| Attribute | Behavior |
+|-----------|----------|
+|sortMissingFirst|When sorting results, Solr will list docuemnts that don't have a value for the field at the top of the results.|
+|sortMissingLast | When sorting results, solr will list documents that dont have value for the field at the bottom of the results | 
+|precisonStep| Determines the number terms created to represent a numeric value in the index for doing fast range queries on trie-based fields like TrieDate and TrieLong; see the JavaDoc for the NumericRangeQuery class for more details about the precisionStep attribute. |
+|positionIncrementGap|USed to prevent phrase queries from matching the end of one value and the beginning of the next value in multivalued fields|
+
+**Choosing the best precisionStep for numeric fields**
+
+Decide if you even need to worry about precisionStep by asking whether you have any numeric or date fields in your index that users would like to find in documents when searching across a range of values in those fields. 
+
