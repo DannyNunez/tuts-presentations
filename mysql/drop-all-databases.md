@@ -5,8 +5,8 @@
 SELECT CONCAT('DROP DATABASE ',schema_name,' ;') AS stmt
   FROM information_schema.schemata
  WHERE schema_name != 'information_schema'
- WHERE schema_name != 'mysql'
- WHERE schema_name != 'performance_schema'
+ AND   schema_name != 'mysql'
+ AND   schema_name != 'performance_schema'
  ORDER BY schema_name
 ```
 
