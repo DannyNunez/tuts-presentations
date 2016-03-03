@@ -255,3 +255,34 @@ Solr support optional attributes for field types to enable advanced behavior.
 
 Decide if you even need to worry about precisionStep by asking whether you have any numeric or date fields in your index that users would like to find in documents when searching across a range of values in those fields. 
 
+#####Indexing
+
+XML is the default format when posting data to the index. 
+
+You must tell the application that you are sending JSON by setting the type system property to application/json. 
+
+**Data Import Handler**
+
+The data import handler is an extension that pulls data into solr from one or more external sources. (mysql, xml , json, csv)
+
+ **Extracting Request Handler**
+
+ExtractingRequestHandler, commonly called Solr Cell, allows you to index text content from binary files like PDF, MS Office, and Open Office documents. Behinds the scenes SOLR Cell uses the apache TIKA project. 
+
+
+**Nutch**
+Apache Nutch is a Java-based open source web crawler.
+
+**Update Handler**
+
+In the previous section, we sent new documents to Solr using HTTP POST requests. The request to add these new documents was handled by Solr’s update handler. In general, the update handler processes all updates to your index as well as commit and optimize requests. Table 5.7 provides an overview of common request types supported by the update handler.
+
+ 
+|Request Type| Description | XML Example |
+|--|--|--|
+|Add| Adds one or more documents to the index |  |
+|Delete | Deleted a document by ID,such as deleting a document with ID=1. | \<delete><id>1</id></ delete> |
+|Delete By Query | Deletes documents that match a Lucene qieru, such as deleting all microblog docuemnts from a user with screen_name=@thelabdude | \<query> screen_name:@thelabdude </query></ delete> |
+| Atomic Update | Updates one or more fields of an existing document using optimistic locking | \<add><doc><field name="id" >1</field><field update="set" name="favorites_count">12</ field></ doc></ add> |
+|Commit| Commits documents to index with options to do a soft or hard commit and whether to block on the client until the new searcher is open and warmed|<commit waitSearcher="true" softCommit="false" /> |
+|Optimize|Optimizes the index by merging segments and removing deletes. | <optimize waitSearcher="false" / > |
